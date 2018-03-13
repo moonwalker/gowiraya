@@ -2,7 +2,6 @@ package gowiraya
 
 import (
 	"bytes"
-	"crypto/tls"
 	"encoding/json"
 	"net/http"
 )
@@ -29,11 +28,6 @@ type WirayaClient struct {
 }
 
 func NewWirayaClient(xApiKey string) (client *WirayaClient, err error) {
-	// Disable HTTP/2 due to bug in Wiraya. They do not support HTTP/2 over SSL
-	http.DefaultClient.Transport = &http.Transport{
-		TLSNextProto: make(map[string]func(authority string, c *tls.Conn) http.RoundTripper),
-	}
-
 	client = &WirayaClient{
 		HttpClient: http.DefaultClient,
 		baseUrl:    "https://api.wiraya.com",
@@ -90,7 +84,7 @@ func (c *WirayaClient) VerifyCode() {
 
 }
 
-func (c *WirayaClient) SendPinCode(data SendMessage) (response Response, err error){
+func (c *WirayaClient) SendPinCode(data SendMessage) (response Response, err error) {
 	endpoint := "/api/SendPinCode/json"
 
 	err = c.apiPost(endpoint, data, &response)
@@ -119,10 +113,8 @@ func (c *WirayaClient) apiPost(endpoint string, body interface{}, data interface
 	}
 
 	req.Header.Add("Content-Type", "application/json")
-	req.Header.Set("Accept", "application/json")
-
-	// Adding header like this due to bug in Wiraya. They see headers as case sensitive..
-	req.Header["X-ApiKey"] = []string{c.xApiKey}
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("X-ApiKey", c.xApiKey)
 
 	resp, err := c.HttpClient.Do(req)
 	if err != nil {
