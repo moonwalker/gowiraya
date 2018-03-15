@@ -5,6 +5,8 @@ type Response struct {
 }
 
 type SendMessage struct {
+	Username  string `json:"username,omitempty"`
+	Password  string `json:"username,omitempty"`
 	Recipient string `json:"recipient"`           // Number to send pin to
 	Sender    string `json:"sender"`              // Sender name for SMS
 	Message   string `json:"message"`             // Message, add {code} to specify where the pin should be if pin request
