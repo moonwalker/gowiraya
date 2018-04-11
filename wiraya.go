@@ -80,11 +80,18 @@ func (c *WirayaClient) AddSMSRecipient() {
 
 }
 
-func (c *WirayaClient) VerifyCode() {
+func (c *WirayaClient) VerifyCode(data VerifyPinCode) (response Response, err error) {
+	endpoint := "/api/VerifyCode/json"
 
+	err = c.apiPost(endpoint, data, &response)
+	if err != nil {
+		return
+	}
+
+	return
 }
 
-func (c *WirayaClient) SendPinCode(data SendMessage) (response Response, err error) {
+func (c *WirayaClient) SendPinCode(data SendPinCode) (response Response, err error) {
 	endpoint := "/api/SendPinCode/json"
 
 	err = c.apiPost(endpoint, data, &response)
