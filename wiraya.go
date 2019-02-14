@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/tls"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/url"
 )
@@ -24,24 +23,17 @@ const (
 	StatusFailure      = "FAILURE"
 )
 
-type ProxyConf struct {
-	User string
-	Pass string
-	Host string
-	Port string
-}
-
 type WirayaClient struct {
 	HttpClient *http.Client
 	baseUrl    string
 	xApiKey    string
 }
 
-func NewWirayaClient(xApiKey string, proxy *ProxyConf) (client *WirayaClient, err error) {
+func NewWirayaClient(xApiKey string, proxy *string) (client *WirayaClient, err error) {
 	httpClient := http.DefaultClient
 
 	if proxy != nil {
-		proxyURL, err := url.Parse(fmt.Sprintf("http://%s:%s@%s:%s", proxy.User, proxy.Pass, proxy.Host, proxy.Port))
+		proxyURL, err := url.Parse(*proxy)
 		if err != nil {
 			return nil, err
 		}
