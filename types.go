@@ -26,3 +26,37 @@ type VerifyPinCode struct {
 type MessageStatus struct {
 	MessageId string `json:"MessageId"`
 }
+
+type ContactRequstModel struct {
+	Personal map[string]string `json:"personal"` // Data points with personally identifiable information
+	General  map[string]string `json:"general"`  // Data points without PII
+}
+
+type ActionResponseWithId struct {
+	Error    bool                   `json:"error,omitempty"`
+	Failures map[string]interface{} `json:"failures,omitempty"`
+}
+
+type CampaignRequestModel struct {
+	Campaign  string `json:"campaign"`            // Campaign identifier (provided by Wiraya)
+	Iteration string `json:"iteration,omitempty"` // Iteration value. Only used with recurring communication to same contacts
+}
+
+type EventRequestModel struct {
+	Name string `json:"name"`         // Event name (provided by Wiraya)
+	At   string `json:"at,omitempty"` // Time of event. ISO format, in UTZ (Z)
+}
+
+type IdResponse struct {
+	Id string `json:"id"` // Correlation id for ingested entity
+}
+
+type TokenResponse struct {
+	Authenticated bool   `json:"authentication"`
+	Token         string `json:"token"`
+	TokenExpires  string `json:"tokenExpires"`
+}
+
+type AuthRequestKey struct {
+	Key string `json:"key,omitempty"` // Static Wiraya API key
+}

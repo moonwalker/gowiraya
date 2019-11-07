@@ -1,0 +1,9 @@
+github.com/go-sql-driver/mysql v1.4.0/go.mod h1:zAC/RDZ24gD3HViQzih4MyKcchzm+sOG5ZlKdlhCg5w=
+github.com/jmoiron/sqlx v1.2.0 h1:41Ip0zITnmWNR/vHV+S4m+VoUivnWY5E4OJfLZjCJMA=
+github.com/jmoiron/sqlx v1.2.0/go.mod h1:1FEQNm3xlJgrMD+FBdI9+xvCksHtbpVBBw5dYhBSsks=
+github.com/lib/pq v1.0.0/go.mod h1:5WUZQaWbwv1U+lTReE5YruASi9Al49XbQIvNi/34Woo=
+github.com/mattn/go-sqlite3 v1.9.0/go.mod h1:FPy6KqzDD04eiIsT53CuJW3U88zkxoIYsOqkbpncsNc=
+github.com/moonwalker/igcclient v0.0.0-20191030142723-89e57c4a1fc7 h1:BDDZaWwVhjEmF16vSpweGKNaUK0yWPsyZ00LfTkX0C4=
+github.com/moonwalker/igcclient v0.0.0-20191030142723-89e57c4a1fc7/go.mod h1:QLjqZTpViDeLtg4R75zukx/idGuvaMphHVMvROUqT4U=
+github.com/moonwalker/logger v0.0.0-20180612150037-cee578646485 h1:TxyW5tr6BP28gfoC+OaiPn4KQ6gxnv3dES2wXDfjJDA=
+github.com/moonwalker/logger v0.0.0-20180612150037-cee578646485/go.mod h1:Wp2MRf/s9UO3wfMS0oYhHAY0l9CSnjkFyz7JMO5ulxI=

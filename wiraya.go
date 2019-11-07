@@ -1,9 +1,8 @@
 package gowiraya
 
 import (
-	"bytes"
 	"crypto/tls"
-	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 )
@@ -24,12 +23,16 @@ const (
 )
 
 type WirayaClient struct {
-	HttpClient *http.Client
-	baseUrl    string
-	xApiKey    string
+	HttpClientProxy *http.Client
+	HttpClient      *http.Client
+	baseUrlNewApi   string
+	baseUrlOldApi   string
+
+	xApiKey string
 }
 
 func NewWirayaClient(xApiKey string, proxy *string) (client *WirayaClient, err error) {
+	httpClientProxy := http.DefaultClient
 	httpClient := http.DefaultClient
 
 	if proxy != nil {
@@ -43,22 +46,28 @@ func NewWirayaClient(xApiKey string, proxy *string) (client *WirayaClient, err e
 			TLSClientConfig: &tls.Config{},
 		}
 
-		httpClient.Transport = &transport
+		httpClientProxy.Transport = &transport
 	}
 
 	client = &WirayaClient{
-		HttpClient: httpClient,
-		baseUrl:    "https://api.wiraya.com",
-		xApiKey:    xApiKey,
+		HttpClientProxy: httpClientProxy,
+		HttpClient:      httpClient,
+		baseUrlOldApi:   "https://api.wiraya.com",
+		baseUrlNewApi:   "https://api.wiraya.ai",
+		xApiKey:         xApiKey,
 	}
 
 	return
 }
 
+//
+// OLD api endpoints
+//
+
 func (c *WirayaClient) SendMessageFromAlpha(data SendMessage) (response Response, err error) {
 	endpoint := "/api/SendMessageFromAlpha/json"
 
-	err = c.apiPost(endpoint, data, &response)
+	err = c.apiPostOld(endpoint, data, &response)
 	if err != nil {
 		return
 	}
@@ -69,7 +78,7 @@ func (c *WirayaClient) SendMessageFromAlpha(data SendMessage) (response Response
 func (c *WirayaClient) GetMessageStatus(data MessageStatus) (response Response, err error) {
 	endpoint := "/api/GetMessageStatus/json"
 
-	err = c.apiPost(endpoint, data, &response)
+	err = c.apiPostOld(endpoint, data, &response)
 	if err != nil {
 		return
 	}
@@ -81,7 +90,7 @@ func (c *WirayaClient) GetMessageStatus(data MessageStatus) (response Response, 
 func (c *WirayaClient) VerifyCode(data VerifyPinCode) (response Response, err error) {
 	endpoint := "/api/VerifyCode/json"
 
-	err = c.apiPost(endpoint, data, &response)
+	err = c.apiPostOld(endpoint, data, &response)
 	if err != nil {
 		return
 	}
@@ -92,7 +101,7 @@ func (c *WirayaClient) VerifyCode(data VerifyPinCode) (response Response, err er
 func (c *WirayaClient) SendPinCode(data SendPinCode) (response Response, err error) {
 	endpoint := "/api/SendPinCode/json"
 
-	err = c.apiPost(endpoint, data, &response)
+	err = c.apiPostOld(endpoint, data, &response)
 	if err != nil {
 		return
 	}
@@ -100,58 +109,39 @@ func (c *WirayaClient) SendPinCode(data SendPinCode) (response Response, err err
 	return
 }
 
-func (c *WirayaClient) apiPost(endpoint string, body interface{}, data interface{}) error {
-	b := new(bytes.Buffer)
-	json.NewEncoder(b).Encode(body)
+//
+// NEW api endpoints
+//
 
-	req, err := http.NewRequest(http.MethodPost, c.baseUrl+endpoint, b)
+func (c *WirayaClient) AddContact(contactID int64, data ContactRequstModel) (response ActionResponseWithId, err error) {
+	endpoint := fmt.Sprintf("/api/Contact/%d", contactID)
+
+	err = c.apiCallNew(http.MethodPut, endpoint, data, &response)
 	if err != nil {
-		return err
+		return
 	}
 
-	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("Accept", "application/json")
-	req.Header.Add("X-ApiKey", c.xApiKey)
+	return
+}
 
-	resp, err := c.HttpClient.Do(req)
+func (c *WirayaClient) AddContactToCampaign(contactID int64, data CampaignRequestModel) (response IdResponse, err error) {
+	endpoint := fmt.Sprintf("/api/Contact/%d/campaigns", contactID)
+
+	err = c.apiCallNew(http.MethodPost, endpoint, data, &response)
 	if err != nil {
-		return err
+		return
 	}
 
-	defer resp.Body.Close()
-
-	return json.NewDecoder(resp.Body).Decode(data)
+	return
 }
 
-/*
+func (c *WirayaClient) AddEventToContact(contactID int64, data EventRequestModel) (response IdResponse, err error) {
+	endpoint := fmt.Sprintf("/api/Contact/%d/events", contactID)
 
-Not yet implemented api endpoints
+	err = c.apiCallNew(http.MethodPut, endpoint, data, &response)
+	if err != nil {
+		return
+	}
 
-func (c *WirayaClient) CreateSMSProject() {
-
+	return
 }
-
-func (c *WirayaClient) GetSMSProjectInfo() {
-
-}
-
-func (c *WirayaClient) UpdateSMSProject() {
-
-}
-
-func (c *WirayaClient) AddSMSRecipients() {
-
-}
-
-func (c *WirayaClient) AddSMSRecipient() {
-
-}
-
-func (c *WirayaClient) AddCalListRecipient() {
-
-}
-
-func (c *WirayaClient) GetVoiceStatus() {
-
-}
-*/
